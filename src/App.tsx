@@ -1,5 +1,9 @@
-const App = () => {
-	return <div>App</div>;
-};
+import { Test } from '@/сommon/components';
 
-export default App;
+export const App = () => {
+	return (
+		<div>
+			<Test />
+		</div>
+	);
+};

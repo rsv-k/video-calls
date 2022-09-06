@@ -16,7 +16,14 @@
 		"ecmaVersion": "latest",
 		"sourceType": "module"
 	},
-	"plugins": ["react", "@typescript-eslint", "react-hooks"],
+	"ignorePatterns": ["vite.config.ts"],
+	"plugins": [
+		"react",
+		"@typescript-eslint",
+		"react-hooks",
+		"import",
+		"only-error"
+	],
 	"rules": {
 		"react/jsx-tag-spacing": [
 			"error",
@@ -48,7 +55,8 @@
 			}
 		],
 		"react-hooks/rules-of-hooks": ["error", "always"],
-		"react-hooks/exhaustive-deps": ["error"]
+		"react-hooks/exhaustive-deps": ["error"],
+		"import/no-default-export": "error"
 	},
 	"settings": {
 		"react": {
