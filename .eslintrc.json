@@ -1,0 +1,58 @@
+{
+	"env": {
+		"browser": true,
+		"es2021": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended",
+		"plugin:react/jsx-runtime",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended"
+	],
+	"overrides": [],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": "latest",
+		"sourceType": "module"
+	},
+	"plugins": ["react", "@typescript-eslint", "react-hooks"],
+	"rules": {
+		"react/jsx-tag-spacing": [
+			"error",
+			{
+				"beforeSelfClosing": "always"
+			}
+		],
+		"react/jsx-props-no-spreading": ["error"],
+		"react/jsx-props-no-multi-spaces": ["error"],
+		"react/jsx-pascal-case": [
+			"error",
+			{
+				"allowAllCaps": false,
+				"allowLeadingUnderscore": false
+			}
+		],
+		"react/jsx-one-expression-per-line": ["error", { "allow": "literal" }],
+		"react/jsx-no-useless-fragment": ["error"],
+		"react/jsx-no-leaked-render": ["error"],
+		"react/jsx-no-constructed-context-values": ["error"],
+		"react/jsx-filename-extension": ["error", { "extensions": [".tsx"] }],
+		"react/jsx-boolean-value": ["error"],
+		"react/no-multi-comp": ["error"],
+		"react/hook-use-state": ["error"],
+		"react/function-component-definition": [
+			"error",
+			{
+				"namedComponents": "arrow-function"
+			}
+		],
+		"react-hooks/rules-of-hooks": ["error", "always"],
+		"react-hooks/exhaustive-deps": ["error"]
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		}
+	}
+}
