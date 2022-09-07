@@ -1,9 +1,5 @@
-import { Test } from '@/сommon/components';
+import { Home } from '@/pages';
 
 export const App = () => {
-	return (
-		<div>
-			<Test />
-		</div>
-	);
+	return <Home />;
 };
