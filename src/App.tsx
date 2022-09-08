@@ -1,13 +1,16 @@
 import { useAuthState, useSignInWithGoogle } from 'react-firebase-hooks/auth';
+import { useEffect } from 'react';
+import { Button } from '@mantine/core';
+import { useRoutes } from 'react-router-dom';
 
 import { auth, setUserOffline, setUserOnline } from '@/configs/firebase';
-import { Home } from '@/pages';
-import { Button } from '@mantine/core';
-import { useEffect } from 'react';
+import { pages } from '@/pages';
 
 export const App = () => {
 	const [signInWithGoogle] = useSignInWithGoogle(auth);
 	const [user] = useAuthState(auth);
+
+	const routes = useRoutes(pages);
 
 	useEffect(() => {
 		if (!user) {
@@ -26,7 +29,7 @@ export const App = () => {
 	}, [user]);
 
 	return user ? (
-		<Home />
+		routes
 	) : (
 		<Button onClick={() => signInWithGoogle()}>Sign in with google</Button>
 	);
