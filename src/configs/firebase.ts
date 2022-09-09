@@ -32,8 +32,12 @@ export const setUserOnline = (userId: string, data: Omit<TUser, 'userId'>) => {
 	});
 };
 
-export const setUserOffline = async (userId: string) => {
-	const user = doc(usersColRef, userId);
+export const setUserOffline = async () => {
+	if (!auth.currentUser) {
+		return;
+	}
+
+	const user = doc(usersColRef, auth.currentUser?.uid);
 
 	await updateDoc(user, {
 		status: 1,

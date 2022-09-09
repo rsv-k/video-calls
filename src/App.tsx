@@ -1,4 +1,5 @@
 import { useAuthState, useSignInWithGoogle } from 'react-firebase-hooks/auth';
+import { useWindowEvent } from '@mantine/hooks';
 import { useEffect } from 'react';
 import { Button } from '@mantine/core';
 import { useRoutes } from 'react-router-dom';
@@ -9,6 +10,7 @@ import { pages } from '@/pages';
 export const App = () => {
 	const [signInWithGoogle] = useSignInWithGoogle(auth);
 	const [user] = useAuthState(auth);
+	useWindowEvent('beforeunload', setUserOffline);
 
 	const routes = useRoutes(pages);
 
@@ -21,10 +23,6 @@ export const App = () => {
 			status: 0,
 			username: user.displayName || 'Anonymous',
 			picture: user.photoURL || '',
-		});
-
-		window.addEventListener('beforeunload', async () => {
-			await setUserOffline(user.uid);
 		});
 	}, [user]);
 
