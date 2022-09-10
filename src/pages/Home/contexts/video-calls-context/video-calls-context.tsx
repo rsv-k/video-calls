@@ -76,6 +76,7 @@ export const VideoCallsProvider = ({
 		usersToConnectWith.forEach((user) => {
 			establishedConnection.current.add(user.userId);
 			const conn = currentUserPeer.connect(user.userId);
+			console.log(conn);
 			setCurrentConnections((prev) => [...prev, conn]);
 
 			conn.on('open', () => {

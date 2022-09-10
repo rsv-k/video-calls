@@ -13,7 +13,11 @@ export const Home = () => {
 
 	const [user] = useAuthState(auth);
 	const [snapshot] = useCollection(
-		query(usersColRef, where('__name__', '!=', user && user.uid)),
+		query(
+			usersColRef,
+			where('__name__', '!=', user && user.uid),
+			where('status', '==', 0),
+		),
 	);
 
 	const users = snapshot?.docs.map((doc) => ({
