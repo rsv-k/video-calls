@@ -17,6 +17,12 @@ export const reducer = (
 				incomingCall: action.payload,
 			};
 		}
+		case 'leaveCall': {
+			return {
+				...state,
+				usersOnCall: [state.usersOnCall[0]],
+			};
+		}
 		default: {
 			return { ...state };
 		}

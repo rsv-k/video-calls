@@ -19,6 +19,7 @@ export type TVideoCallsContext = {
 	onAnswer: () => void;
 	onRefuse: () => void;
 	onCall: (userId: string) => void;
+	onLeaveCall: () => void;
 };
 
 export type TAction =
@@ -29,4 +30,7 @@ export type TAction =
 	| {
 			type: 'receivingCall';
 			payload: boolean;
+	  }
+	| {
+			type: 'leaveCall';
 	  };

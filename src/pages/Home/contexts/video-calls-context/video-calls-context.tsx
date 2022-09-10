@@ -1,4 +1,4 @@
-import { Peer, MediaConnection } from 'peerjs';
+import { Peer, MediaConnection, DataConnection } from 'peerjs';
 import {
 	createContext,
 	PropsWithChildren,
@@ -10,7 +10,7 @@ import {
 	useRef,
 	useState,
 } from 'react';
-import { initialState, mediaOptions } from './constants';
+import { initialState, mediaOptions, DATA_ACTIONS } from './constants';
 import { reducer } from './reducer';
 import { Props, TVideoCallsContext } from './types';
 
@@ -26,9 +26,10 @@ export const VideoCallsProvider = ({
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const [currentUserPeer, setCurrentUserPeer] = useState<Peer | null>(null);
 	const [currentUserStream, setCurrentUserStream] = useState<MediaStream>();
-	const [incomingCall, setIncomingCall] = useState<MediaConnection | null>(
-		null,
-	);
+	const [currentCall, setCurrentCall] = useState<MediaConnection | null>(null);
+	const [currentConnections, setCurrentConnections] = useState<
+		DataConnection[]
+	>([]);
 	const establishedConnection = useRef<Set<string>>(new Set());
 
 	const addUserToStream = (stream: MediaStream) => {
@@ -44,16 +45,12 @@ export const VideoCallsProvider = ({
 		const peer = new Peer(currentUserId);
 
 		peer.on('connection', (conn) => {
-			conn.on('open', () => {
-				conn.on('data', () => {
-					console.log('data');
-				});
-			});
+			setCurrentConnections((prev) => [...prev, conn]);
 		});
 
 		peer.on('call', (call) => {
 			dispatch({ type: 'receivingCall', payload: true });
-			setIncomingCall(call);
+			setCurrentCall(call);
 		});
 
 		navigator.mediaDevices
@@ -79,10 +76,15 @@ export const VideoCallsProvider = ({
 		usersToConnectWith.forEach((user) => {
 			establishedConnection.current.add(user.userId);
 			const conn = currentUserPeer.connect(user.userId);
+			setCurrentConnections((prev) => [...prev, conn]);
 
 			conn.on('open', () => {
-				conn.on('data', () => {
-					console.log(`receiving data from ${user.userId}`);
+				conn.on('data', (data) => {
+					const d = data as typeof DATA_ACTIONS[keyof typeof DATA_ACTIONS];
+
+					if (d == DATA_ACTIONS.LEAVE_CALL) {
+						dispatch({ type: 'leaveCall' });
+					}
 				});
 			});
 		});
@@ -99,33 +101,47 @@ export const VideoCallsProvider = ({
 			call.once('stream', (stream) => {
 				addUserToStream(stream);
 			});
+
+			setCurrentCall(call);
 		},
 		[currentUserPeer, currentUserStream],
 	);
 
 	const onAnswer = useCallback(() => {
-		if (!incomingCall) {
+		if (!currentCall) {
 			return;
 		}
 
-		incomingCall.once('stream', addUserToStream);
+		currentCall.once('stream', addUserToStream);
 
-		incomingCall.answer(currentUserStream);
+		currentCall.answer(currentUserStream);
 		dispatch({ type: 'receivingCall', payload: false });
-	}, [currentUserStream, incomingCall]);
+	}, [currentUserStream, currentCall]);
 
 	const onRefuse = useCallback(() => {
-		if (!incomingCall) {
+		if (!currentCall) {
 			return;
 		}
 
-		incomingCall.close();
+		currentCall.close();
 		dispatch({ type: 'receivingCall', payload: false });
-	}, [incomingCall]);
+	}, [currentCall]);
+
+	const onLeaveCall = useCallback(() => {
+		if (!currentCall) {
+			return;
+		}
+
+		currentConnections.forEach((conn) => {
+			conn.send(DATA_ACTIONS.LEAVE_CALL);
+		});
+		dispatch({ type: 'leaveCall' });
+		currentCall.close();
+	}, [currentCall, currentConnections]);
 
 	const values = useMemo(() => {
-		return { state, onAnswer, onCall, onRefuse };
-	}, [state, onAnswer, onCall, onRefuse]);
+		return { state, onAnswer, onCall, onRefuse, onLeaveCall };
+	}, [state, onAnswer, onCall, onRefuse, onLeaveCall]);
 
 	return (
 		<VideoCallsContext.Provider value={values}>

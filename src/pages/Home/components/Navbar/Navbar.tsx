@@ -1,26 +1,15 @@
-import { useParams } from 'react-router-dom';
-import { StyledNavLink } from './Elements';
-import { auth, usersColRef } from '@/configs/firebase';
 import { List, Navbar as MantineNavbar, ScrollArea } from '@mantine/core';
-import { query, where } from 'firebase/firestore';
-import { useCollection } from 'react-firebase-hooks/firestore';
+import { StyledNavLink } from './Elements';
 
-import { TParamsWithId, TUser } from '@/types';
+import { TUser } from '@/types';
 import { UserBlock } from '@/сommon/components';
-import { useAuthState } from 'react-firebase-hooks/auth';
 
-export const Navbar = () => {
-	const { id } = useParams<TParamsWithId>();
-	const [user] = useAuthState(auth);
-	const [snapshot] = useCollection(
-		query(usersColRef, where('__name__', '!=', user && user.uid)),
-	);
+type Props = {
+	users: TUser[];
+	selectedUserId?: string;
+};
 
-	const users = snapshot?.docs.map((doc) => ({
-		userId: doc.id,
-		...doc.data(),
-	})) as TUser[];
-
+export const Navbar = ({ users, selectedUserId }: Props) => {
 	return (
 		<MantineNavbar width={{ base: 300 }}>
 			<MantineNavbar.Section
@@ -37,7 +26,7 @@ export const Navbar = () => {
 								state={user}
 							>
 								<UserBlock
-									active={user.userId === id}
+									active={user.userId === selectedUserId}
 									avatar={user.picture}
 									username={user.username}
 								/>

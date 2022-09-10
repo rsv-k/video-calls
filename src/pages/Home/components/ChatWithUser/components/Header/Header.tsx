@@ -1,3 +1,4 @@
+import { useVideoCalls } from '@/pages/Home/contexts/video-calls-context';
 import { Group, Text, ActionIcon } from '@mantine/core';
 import { IconPhoneCall } from '@tabler/icons';
 
@@ -8,13 +9,15 @@ type Props = {
 };
 
 export const Header = ({ height, username, userId }: Props) => {
+	const { onCall } = useVideoCalls();
+
 	const callUser = () => {
-		console.log(userId);
+		onCall(userId);
 	};
 
 	return (
 		<Group
-			sx={{ height }}
+			sx={(theme) => ({ height, padding: theme.spacing.md })}
 			position="apart"
 		>
 			<Text size="lg">{username}</Text>

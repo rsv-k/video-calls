@@ -6,3 +6,7 @@ export const initialState: TInitialState = {
 };
 
 export const mediaOptions = { audio: true, video: true };
+
+export const DATA_ACTIONS = {
+	LEAVE_CALL: 0,
+} as const;
